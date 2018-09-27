@@ -60,6 +60,7 @@ ${COMPILER}:
 ${COMPILER}/gameport.axf: ${COMPILER}/input.o \
     ${COMPILER}/leds.o \
     ${COMPILER}/main.o \
+    ${COMPILER}/serial.o \
     ${COMPILER}/usb.o \
     ${COMPILER}/startup_${COMPILER}.o \
     ${ROOT}/usblib/${COMPILER}/libusb.a \

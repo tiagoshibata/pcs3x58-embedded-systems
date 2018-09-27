@@ -1,10 +1,10 @@
 #include "leds.h"
 
-#include <inc/hw_memmap.h>
 #include <driverlib/gpio.h>
 #include <driverlib/pin_map.h>
 #include <driverlib/pwm.h>
 #include <driverlib/rom.h>
+#include <inc/hw_memmap.h>
 
 ///@defgroup leds LEDs
 ///@{

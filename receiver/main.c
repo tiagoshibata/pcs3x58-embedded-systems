@@ -4,6 +4,7 @@
 
 #include "input.h"
 #include "leds.h"
+#include "serial.h"
 #include "usb.h"
 
 int main() {
@@ -18,6 +19,7 @@ int main() {
     leds_init();
     usb_init();
     input_init();
+    serial_init();
 
     for (;;) {
         uint32_t raw_buttons = input_get_switches();
