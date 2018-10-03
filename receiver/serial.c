@@ -10,9 +10,6 @@
 #include "leds.h"  // FIXME
 
 void serial_init() {
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-
     ROM_GPIOPinConfigure(GPIO_PB0_U1RX);
     ROM_GPIOPinConfigure(GPIO_PB1_U1TX);
 
@@ -29,7 +26,7 @@ void UART1IntHandler() {
     leds_g(4095);
     uint32_t ui32Status = ROM_UARTIntStatus(UART1_BASE, true);
     ROM_UARTIntClear(UART1_BASE, ui32Status);
-    while(ROM_UARTCharsAvail(UART1_BASE)) {
+    while (ROM_UARTCharsAvail(UART1_BASE)) {
         uint32_t buttons = ROM_UARTCharGetNonBlocking(UART1_BASE);
         leds_r(4095);
         if (buttons != usb_report.buttons) {

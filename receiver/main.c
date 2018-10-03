@@ -8,9 +8,11 @@
 #include "usb.h"
 
 int main() {
-    // Use 50MHz
-    ROM_SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    // Use 80MHz
+    ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);  // UART1
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);  // USB, analog inputs
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);  // buttons
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);  // board LEDs and switches
