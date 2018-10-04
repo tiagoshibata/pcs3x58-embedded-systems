@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 
+#include "9dof.hh"
 #include "serial.h"
 
 int main() {
@@ -8,5 +9,6 @@ int main() {
     if (write(fd, "hello", 6) != 6) {
         perror("write");
     }
+    Serialize9Dof s;
     return 0;
 }
