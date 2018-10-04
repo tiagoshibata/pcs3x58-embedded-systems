@@ -6,7 +6,7 @@
 
 Serialize9Dof::Serialize9Dof() {
     settings = new RTIMUSettings("/etc", "RTIMULib");
-    RTIMU *imu = RTIMU::createIMU(settings);
+    imu = RTIMU::createIMU(settings);
 
     if ((imu == NULL) || (imu->IMUType() == RTIMU_TYPE_NULL)) {
         std::cerr << "No IMU found\n";
@@ -30,5 +30,7 @@ bool Serialize9Dof::serialize(char *buffer) {
 }
 
 Serialize9Dof::~Serialize9Dof() {
+    if (imu)
+        delete imu;
     delete settings;
 }

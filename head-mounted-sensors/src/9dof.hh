@@ -8,4 +8,5 @@ public:
 
 private:
     RTIMUSettings *settings;
-}
+    RTIMU *imu;
+};

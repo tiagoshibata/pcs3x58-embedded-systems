@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(sensors_transmitter)
 
-add_executable(main src/main.cc src/serial.c)
+add_executable(main src/9dof.cc src/main.cc src/serial.c)
 target_compile_options(main PRIVATE -Wall -Wextra -pedantic)
+target_link_libraries(main PRIVATE RTIMULib)
