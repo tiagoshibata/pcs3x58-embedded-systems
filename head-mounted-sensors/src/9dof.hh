@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include <RTIMULib.h>
 
 class Serialize9Dof {
@@ -9,4 +11,5 @@ public:
 private:
     RTIMUSettings *settings;
     RTIMU *imu;
+    struct timespec last_read = {};
 };

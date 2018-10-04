@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 
 #include <RTIMULib.h>
 
@@ -20,6 +21,9 @@ Serialize9Dof::Serialize9Dof() {
 }
 
 bool Serialize9Dof::serialize(char *buffer) {
+    struct timespec current_time;
+    clock_gettime(CLOCK_MONOTONIC, &current_time);
+    double delta_ms = (current_time.tv_sec - last_read.tv_sec) * 1000 + 1e-6 * (current_time.tv_nsec - last_read.tv_nsec);
     //  poll at the rate recommended by the IMU
     // usleep(imu->IMUGetPollInterval() * 1000);
     if (!imu->IMURead())
