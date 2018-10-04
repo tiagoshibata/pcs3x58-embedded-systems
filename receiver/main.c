@@ -24,8 +24,7 @@ int main() {
     serial_init();
 
     for (;;) {
-        uint32_t raw_buttons = input_get_switches();
-        uint32_t buttons = (!(raw_buttons & SW1)) | (!(raw_buttons & SW2) << 1);
+        uint32_t buttons = ROM_UARTCharGet(UART1_BASE);
         if (buttons != usb_report.buttons) {
             usb_report.buttons = buttons;
             usb_schedule_report();

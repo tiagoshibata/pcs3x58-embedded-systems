@@ -36,7 +36,7 @@
 # This is part of revision 2.1.4.178 of the Tiva Firmware Development Package.
 #
 #******************************************************************************
-# Changed by Tiago Shibata for Gameport to USB adapter.
+# Changed by Tiago Shibata.
 
 PART=TM4C123GH6PM
 
@@ -48,7 +48,7 @@ include ${ROOT}/makedefs
 IPATH?=$(ROOT)
 
 all: ${COMPILER}
-all: ${COMPILER}/gameport.axf
+all: ${COMPILER}/pimpolho.axf
 
 clean:
 	@rm -rf ${COMPILER} ${wildcard *~}
@@ -57,7 +57,7 @@ clean:
 ${COMPILER}:
 	@mkdir -p ${COMPILER}
 
-${COMPILER}/gameport.axf: ${COMPILER}/input.o \
+${COMPILER}/pimpolho.axf: ${COMPILER}/input.o \
     ${COMPILER}/leds.o \
     ${COMPILER}/main.o \
     ${COMPILER}/serial.o \
@@ -66,8 +66,8 @@ ${COMPILER}/gameport.axf: ${COMPILER}/input.o \
     ${ROOT}/usblib/${COMPILER}/libusb.a \
     ${ROOT}/driverlib/${COMPILER}/libdriver.a \
     project.ld
-SCATTERgcc_gameport=project.ld
-ENTRY_gameport=ResetISR
+SCATTERgcc_pimpolho=project.ld
+ENTRY_pimpolho=ResetISR
 CFLAGSgcc=-Wextra -DTARGET_IS_TM4C123_RB1 -include stdint.h -include stdbool.h -include stdlib.h
 
 # Include the automatically generated dependency files.

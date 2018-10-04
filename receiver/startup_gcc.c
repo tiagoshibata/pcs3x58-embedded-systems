@@ -36,7 +36,7 @@
 // This is part of revision 2.1.0.12573 of the Tiva Firmware Development Package.
 //
 //*****************************************************************************
-// Changed by Tiago Shibata for Gameport to USB adapter.
+// Changed by Tiago Shibata.
 
 // Define BSS_ZERO_FILL to zero initialize BSS
 #define BSS_ZERO_FILL
@@ -97,7 +97,7 @@ void (* const g_pfnVectors[])(void) = {
     IntDefaultHandler,                      // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
     IntDefaultHandler,                      // UART0 Rx and Tx
-    UART1IntHandler,                        // UART1 Rx and Tx
+    IntDefaultHandler,  // UART1IntHandler, // UART1 Rx and Tx
     IntDefaultHandler,                      // SSI0 Rx and Tx
     IntDefaultHandler,                      // I2C0 Master and Slave
     IntDefaultHandler,                      // PWM Fault

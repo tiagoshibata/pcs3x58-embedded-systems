@@ -18,20 +18,21 @@ void serial_init() {
     ROM_UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 115200,
         UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
 
-    ROM_IntEnable(INT_UART1);
-    ROM_UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
+#ifdef UART_LOOPBACK  // useful for testing e.g. interrupts
+    UARTLoopbackEnable(UART1_BASE);
+#endif
+    // ROM_IntEnable(INT_UART1);
+    // ROM_UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
 }
 
-void UART1IntHandler() {
-    leds_g(4095);
-    uint32_t ui32Status = ROM_UARTIntStatus(UART1_BASE, true);
-    ROM_UARTIntClear(UART1_BASE, ui32Status);
-    while (ROM_UARTCharsAvail(UART1_BASE)) {
-        uint32_t buttons = ROM_UARTCharGetNonBlocking(UART1_BASE);
-        leds_r(4095);
-        if (buttons != usb_report.buttons) {
-            usb_report.buttons = buttons;
-            usb_schedule_report();
-        }
-    }
-}
+// void UART1IntHandler() {
+//     uint32_t ui32Status = ROM_UARTIntStatus(UART1_BASE, true);
+//     ROM_UARTIntClear(UART1_BASE, ui32Status);
+//     while (ROM_UARTCharsAvail(UART1_BASE)) {
+//         uint32_t buttons = ROM_UARTCharGetNonBlocking(UART1_BASE);
+//         if (buttons != usb_report.buttons) {
+//             usb_report.buttons = buttons;
+//             usb_schedule_report();
+//         }
+//     }
+// }
