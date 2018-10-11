@@ -22,7 +22,7 @@ Serialize9Dof::Serialize9Dof() {
     imu->setCompassEnable(true);
 }
 
-bool Serialize9Dof::serialize(char *buffer) {
+bool Serialize9Dof::serialize(int8_t *buffer) {
     struct timespec current_time;
     clock_gettime(CLOCK_MONOTONIC, &current_time);
     //  poll at the rate recommended by the IMU
@@ -35,9 +35,8 @@ bool Serialize9Dof::serialize(char *buffer) {
     RTIMU_DATA imuData = imu->getIMUData();
     if (!imuData.fusionPoseValid)
         return false;
-    buffer[0] = imuData.fusionPose.x() / PI * 127;
-    buffer[1] = imuData.fusionPose.y() / PI * 127;
-    buffer[2] = imuData.fusionPose.z() / PI * 127;
+    for (int i = 0; i < 3; i++)
+        buffer[i] = imuData.fusionPose.data(i) * (127 / PI);
     printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
     return true;
 }

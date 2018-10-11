@@ -1,11 +1,13 @@
+#include <chrono>
 #include <iostream>
+#include <thread>
 #include <unistd.h>
 
 #include "9dof.hh"
 #include "serial.h"
 
 typedef struct {
-    int8_t signature;
+    uint8_t signature;
     int8_t x1;
     int8_t y1;
     int8_t x2;
@@ -18,8 +20,15 @@ int main() {
     report.signature = 0xaa;
     Serialize9Dof s;
     for (;;) {
-        s.serialize((char *)&report.x1);
-        if (write(fd, report, sizeof(report)) != sizeof(report)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        bool has_data = false;
+        has_data |= s.serialize(&report.x1);
+        if (!has_data)
+            continue;
+        report.buttons = report.x1;
+        printf("Sending...\n");
+        printf("%d %d %d %d %d\n", report.signature, report.x1, report.y1, report.x2, report.buttons);
+        if (write(fd, (void *)&report, sizeof(report)) != sizeof(report)) {
             perror("write");
         }
     }

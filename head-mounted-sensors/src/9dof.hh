@@ -6,7 +6,7 @@ class Serialize9Dof {
 public:
     Serialize9Dof();
     ~Serialize9Dof();
-    bool serialize(char *buffer);
+    bool serialize(int8_t *buffer);
 
 private:
     RTIMUSettings *settings;
