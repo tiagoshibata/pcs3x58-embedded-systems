@@ -26,7 +26,7 @@ int serial_open(const char *port) {
     tty.c_iflag = 0;
 
     tty.c_cflag &= ~(CSTOPB | CSIZE);
-    tty.c_cflag |= CLOCAL | CREAD | PARENB | CS8;
+    tty.c_cflag |= CLOCAL | PARENB | PARODD | CS8;
 
     if (tcsetattr(fd, TCSANOW, &tty)) {
         perror("tcsetattr");
