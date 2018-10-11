@@ -16,7 +16,7 @@ void serial_init() {
     ROM_GPIOPinTypeUART(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
     ROM_UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 115200,
-        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
+        UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_ODD);
 
 #ifdef UART_LOOPBACK  // useful for testing e.g. interrupts
     UARTLoopbackEnable(UART1_BASE);
@@ -25,6 +25,7 @@ void serial_init() {
     // ROM_UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
 }
 
+// If using UART interrupts:
 // void UART1IntHandler() {
 //     uint32_t ui32Status = ROM_UARTIntStatus(UART1_BASE, true);
 //     ROM_UARTIntClear(UART1_BASE, ui32Status);
