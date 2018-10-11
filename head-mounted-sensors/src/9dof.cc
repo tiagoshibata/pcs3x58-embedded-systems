@@ -5,6 +5,8 @@
 
 #include "9dof.hh"
 
+constexpr auto PI = 3.14159265358979323846;
+
 Serialize9Dof::Serialize9Dof() {
     settings = new RTIMUSettings("/etc", "RTIMULib");
     imu = RTIMU::createIMU(settings);
@@ -23,13 +25,20 @@ Serialize9Dof::Serialize9Dof() {
 bool Serialize9Dof::serialize(char *buffer) {
     struct timespec current_time;
     clock_gettime(CLOCK_MONOTONIC, &current_time);
-    double delta_ms = (current_time.tv_sec - last_read.tv_sec) * 1000 + 1e-6 * (current_time.tv_nsec - last_read.tv_nsec);
     //  poll at the rate recommended by the IMU
-    // usleep(imu->IMUGetPollInterval() * 1000);
+    double delta_ms = (current_time.tv_sec - last_read.tv_sec) * 1000 + 1e-6 * (current_time.tv_nsec - last_read.tv_nsec);
+    if (delta_ms < imu->IMUGetPollInterval())
+        return false;
+    last_read = current_time;
     if (!imu->IMURead())
         return false;
     RTIMU_DATA imuData = imu->getIMUData();
-    // printf("%s\r", RTMath::displayDegrees("", imuData.fusionPose));
+    if (!imuData.fusionPoseValid)
+        return false;
+    buffer[0] = imuData.fusionPose.x() / PI * 127;
+    buffer[1] = imuData.fusionPose.y() / PI * 127;
+    buffer[2] = imuData.fusionPose.z() / PI * 127;
+    printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
     return true;
 }
 
