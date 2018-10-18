@@ -25,9 +25,8 @@ int main() {
         has_data |= s.serialize(&report.x1);
         if (!has_data)
             continue;
-        report.buttons = report.x1;
         printf("Sending...\n");
-        printf("%d %d %d %d %d\n", report.signature, report.x1, report.y1, report.x2, report.buttons);
+        printf("%x %d %d %d %d\n", report.signature, report.x1, report.y1, report.x2, report.buttons);
         if (write(fd, (void *)&report, sizeof(report)) != sizeof(report)) {
             perror("write");
         }
