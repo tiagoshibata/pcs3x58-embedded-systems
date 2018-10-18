@@ -20,7 +20,7 @@ int main() {
     report.signature = 0xaa;
     Serialize9Dof s;
     for (;;) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
         bool has_data = false;
         has_data |= s.serialize(&report.x1);
         if (!has_data)
