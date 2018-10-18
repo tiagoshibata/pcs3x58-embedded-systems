@@ -7,16 +7,23 @@
 #include "serial.h"
 #include "usb.h"
 
+#define SIGNATURE       0x55
+#define END_OF_PACKET   0x5a
+
 static inline int8_t get_serial() {
     return (int8_t)ROM_UARTCharGet(UART1_BASE);
 }
 
 static inline void get_wireless_data(gamepad_report_t *report) {
-    while (get_serial() != 0x55) ;
-    report->x1 = get_serial();
-    report->y1 = get_serial();
-    report->x2 = get_serial();
-    report->buttons = get_serial();
+    for (;;) {
+        while (get_serial() != SIGNATURE) ;
+        report->x1 = get_serial();
+        report->y1 = get_serial();
+        report->x2 = get_serial();
+        report->buttons = get_serial();
+        if (get_serial() == END_OF_PACKET)
+            return;
+    }
 }
 
 static inline void schedule_report_if_changed(gamepad_report_t *report) {
@@ -50,11 +57,6 @@ int main() {
     serial_init();
 
     for (;;) {
-        // usb_report.x1 = 2;
-        // usb_report.y1++;
-        // usb_report.x2--;
-        // usb_report.buttons++;
-        // usb_schedule_report();
         gamepad_report_t data;
         get_wireless_data(&data);
         schedule_report_if_changed(&data);
