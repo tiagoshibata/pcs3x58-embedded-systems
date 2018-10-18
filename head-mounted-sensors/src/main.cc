@@ -17,7 +17,7 @@ typedef struct {
 int main() {
     int fd = serial_open("/dev/ttySAC0");
     gamepad_report_t report;
-    report.signature = 0xaa;
+    report.signature = 0x55;
     Serialize9Dof s;
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(30));

@@ -7,10 +7,14 @@
 #include "serial.h"
 #include "usb.h"
 
+int8_t get_serial() {
+    return (int8_t)ROM_UARTCharGet(UART1_BASE);
+}
+
 static inline void get_wireless_data(int8_t *buffer) {
-    while (ROM_UARTCharGet(UART1_BASE) != 0xaa) ;
+    while (get_serial() != 0x55) ;
     for (int i = 0; i < 4; i++)
-        buffer[i] = (int8_t)ROM_UARTCharGet(UART1_BASE);
+        buffer[i] = get_serial();
 }
 
 static inline void schedule_report_if_changed(gamepad_report_t *report) {
