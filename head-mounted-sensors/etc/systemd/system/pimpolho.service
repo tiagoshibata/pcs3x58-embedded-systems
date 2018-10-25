@@ -1,0 +1,11 @@
+[Unit]
+Description=PimpOlho service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+ExecStart=/usr/local/bin/pimpolho
+
+[Install]
+WantedBy=multi-user.target
