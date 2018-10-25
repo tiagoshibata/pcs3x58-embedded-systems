@@ -37,7 +37,7 @@ bool Serialize9Dof::serialize(int8_t *buffer) {
         return false;
     for (int i = 0; i < 3; i++)
         buffer[i] = imuData.fusionPose.data(i) * (127 / PI);
-    printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
+    // printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
     return true;
 }
 
