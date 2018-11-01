@@ -35,7 +35,8 @@ bool Serialize9Dof::serialize(int8_t *buffer) {
     RTIMU_DATA imuData = imu->getIMUData();
     if (!imuData.fusionPoseValid)
         return false;
-    for (int i = 0; i < 3; i++)
+    buffer[0] = ((int)((imuData.fusionPose.data(0) + PI) * (127 / PI))) & 0xff;
+    for (int i = 1; i < 3; i++)
         buffer[i] = imuData.fusionPose.data(i) * (127 / PI);
     // printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
     return true;
