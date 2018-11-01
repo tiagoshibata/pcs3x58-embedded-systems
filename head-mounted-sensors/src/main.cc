@@ -12,21 +12,27 @@ typedef struct {
     int8_t y1;
     int8_t x2;
     uint8_t buttons;
-    uint8_t end_of_packet;
 } __attribute__((packed)) gamepad_report_t;
 
 namespace {
     gamepad_report_t report = {};
 
+    void delay_write(int fd, int8_t value) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(24));
+        if (write(fd, (void *)(&value), 1) != 1) {
+            perror("write");
+        }
+    }
+
     void send_gamepad_report(int fd) {
-        char *report_bytes = (char *)&report;
+        int8_t *report_bytes = (int8_t *)&report;
         for (;;) {
+            int8_t sum = 0;
             for (unsigned i = 0; i < sizeof(report); i++) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(16));
-                if (write(fd, (void *)(report_bytes + i), 1) != 1) {
-                    perror("write");
-                }
+                sum += report_bytes[i];
+                delay_write(fd, report_bytes[i]);
             }
+            delay_write(fd, -sum);
         }
     }
 }
@@ -36,7 +42,6 @@ int main(int argc, char **argv) {
     int fd = serial_open("/dev/ttySAC0");
     int verbose = argc > 1 && std::string(argv[1]) == "-v";
     report.signature = 0x55;
-    report.end_of_packet = 0x5a;
     Serialize9Dof s;
     std::thread sender(send_gamepad_report, fd);
     for (;;) {

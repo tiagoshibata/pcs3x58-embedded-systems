@@ -8,7 +8,6 @@
 #include "usb.h"
 
 #define SIGNATURE       0x55
-#define END_OF_PACKET   0x5a
 
 static inline int8_t get_serial() {
     return (int8_t)ROM_UARTCharGet(UART1_BASE);
@@ -21,7 +20,8 @@ static inline void get_wireless_data(gamepad_report_t *report) {
         report->y1 = get_serial();
         report->x2 = get_serial();
         report->buttons = get_serial();
-        if (get_serial() == END_OF_PACKET)
+        // Validate checksum
+        if (get_serial() == -(SIGNATURE + report->x1 + report->y1 + report->x2 + report->buttons))
             return;
     }
 }
