@@ -21,7 +21,9 @@ static inline void get_wireless_data(gamepad_report_t *report) {
         report->x2 = get_serial();
         report->buttons = get_serial();
         // Validate checksum
-        if (get_serial() == -(SIGNATURE + report->x1 + report->y1 + report->x2 + report->buttons))
+        int16_t checksum = get_serial();
+        checksum |= get_serial() << 8;
+        if (checksum == ((((uint8_t)report->x1 << 8) | report->y1) ^ (((uint8_t)report->x2 << 8) | report->buttons)))
             return;
     }
 }

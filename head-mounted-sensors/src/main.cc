@@ -25,14 +25,16 @@ namespace {
     }
 
     void send_gamepad_report(int fd) {
-        int8_t *report_bytes = (int8_t *)&report;
+        gamepad_report_t report_copy;
+        int8_t *report_bytes = (int8_t *)&report_copy;
         for (;;) {
-            int8_t sum = 0;
+            report_copy = report;
             for (unsigned i = 0; i < sizeof(report); i++) {
-                sum += report_bytes[i];
                 delay_write(fd, report_bytes[i]);
             }
-            delay_write(fd, -sum);
+            int16_t sum = ((((uint8_t)report_copy.x1) << 8) | report_copy.y1) ^ ((((uint8_t)report_copy.x2) << 8) | report_copy.buttons);
+            delay_write(fd, sum & 0xff);
+            delay_write(fd, (sum >> 8) & 0xff);
         }
     }
 }
