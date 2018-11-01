@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <time.h>
 
@@ -22,6 +23,22 @@ Serialize9Dof::Serialize9Dof() {
     imu->setCompassEnable(true);
 }
 
+namespace {
+#define ROTATION_LIMIT  (PI / 4)
+    int8_t constrain(float angle) {
+        angle = fmodf(angle, 2 * PI);
+        if (angle > PI)
+            angle -= 2 * PI;
+        else if (angle < -PI)
+            angle += 2 * PI;
+        if (angle > ROTATION_LIMIT)
+            return INT8_MAX;
+        if (angle < -ROTATION_LIMIT)
+            return INT8_MIN;
+        return 127 * angle / ROTATION_LIMIT;
+    }
+}
+
 bool Serialize9Dof::serialize(int8_t *buffer) {
     struct timespec current_time;
     clock_gettime(CLOCK_MONOTONIC, &current_time);
@@ -35,8 +52,8 @@ bool Serialize9Dof::serialize(int8_t *buffer) {
     RTIMU_DATA imuData = imu->getIMUData();
     if (!imuData.fusionPoseValid)
         return false;
-    buffer[0] = ((int)((imuData.fusionPose.data(0) + PI) * (127 / PI))) & 0xff;
-    buffer[1] = imuData.fusionPose.data(1) * (127 / PI);
+    buffer[0] = constrain(imuData.fusionPose.data(0) + PI);
+    buffer[1] = constrain(imuData.fusionPose.data(1));
     // printf("%f %f %f\n", imuData.fusionPose.x(), imuData.fusionPose.y(), imuData.fusionPose.z());
     return true;
 }
