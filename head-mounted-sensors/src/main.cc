@@ -18,7 +18,7 @@ namespace {
     gamepad_report_t report = {};
 
     void delay_write(int fd, int8_t value) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(24));
+        std::this_thread::sleep_for(std::chrono::milliseconds(12));
         if (write(fd, (void *)(&value), 1) != 1) {
             perror("write");
         }
