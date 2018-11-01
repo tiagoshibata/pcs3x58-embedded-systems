@@ -29,12 +29,13 @@ namespace {
         int8_t *report_bytes = (int8_t *)&report_copy;
         for (;;) {
             report_copy = report;
+            int8_t sum = 0;
             for (unsigned i = 0; i < sizeof(report); i++) {
+                sum ^= report_bytes[i];
                 delay_write(fd, report_bytes[i]);
             }
-            int16_t sum = ((((uint8_t)report_copy.x1) << 8) | report_copy.y1) ^ ((((uint8_t)report_copy.x2) << 8) | report_copy.buttons);
-            delay_write(fd, sum & 0xff);
-            delay_write(fd, (sum >> 8) & 0xff);
+            delay_write(fd, sum);
+            delay_write(fd, ~sum);
         }
     }
 }
