@@ -67,6 +67,61 @@ static const uint8_t * const usb_string_descriptors[] = {
 static uint32_t usb_callback(void __attribute__((unused)) *private_data,
     uint32_t event, uint32_t parameter, void *data);
 
+static const uint8_t usb_descriptor[] =
+{
+    UsagePage(USB_HID_GENERIC_DESKTOP),
+    Usage(USB_HID_JOYSTICK),
+    Collection(USB_HID_APPLICATION),
+        //
+        // The axis for the controller.
+        //
+        UsagePage(USB_HID_GENERIC_DESKTOP),
+        Usage (USB_HID_POINTER),
+        Collection (USB_HID_PHYSICAL),
+
+            //
+            // The X, Y and Z values which are specified as 8-bit absolute
+            // position values.
+            //
+            Usage (USB_HID_X),
+            Usage (USB_HID_Y),
+            Usage (USB_HID_Z),
+            LogicalMinimum(-128),
+            LogicalMaximum(127),
+            PhysicalMinimum(-128),
+            PhysicalMaximum(127),
+
+            //
+            // 3 8-bit absolute values.
+            //
+            ReportSize(8),
+            ReportCount(3),
+            Input(USB_HID_INPUT_DATA | USB_HID_INPUT_VARIABLE |
+                  USB_HID_INPUT_ABS),
+
+            //
+            // The 8 buttons.
+            //
+            UsagePage(USB_HID_BUTTONS),
+            UsageMinimum(1),
+            UsageMaximum(8),
+            LogicalMinimum(0),
+            LogicalMaximum(1),
+            PhysicalMinimum(0),
+            PhysicalMaximum(1),
+
+            //
+            // 8 - 1 bit values for the buttons.
+            //
+            ReportSize(1),
+            ReportCount(8),
+            Input(USB_HID_INPUT_DATA | USB_HID_INPUT_VARIABLE |
+                  USB_HID_INPUT_ABS),
+
+        EndCollection,
+    EndCollection
+};
+
 tUSBDHIDGamepadDevice gamepad_device = {
     .ui16VID = USB_VID_TI_1CBE,    // vendor ID
     .ui16PID = USB_PID_GAMEPAD,    // product ID
@@ -76,8 +131,8 @@ tUSBDHIDGamepadDevice gamepad_device = {
     .pvCBData = NULL,
     .ppui8StringDescriptors = usb_string_descriptors,
     .ui32NumStringDescriptors = sizeof(usb_string_descriptors) / sizeof(uint8_t *),
-    .pui8ReportDescriptor = NULL,
-    .ui32ReportSize = 0
+    .pui8ReportDescriptor = usb_descriptor,
+    .ui32ReportSize = sizeof(usb_descriptor),
 };
 
 enum {

@@ -21,6 +21,5 @@ void input_init() {
 }
 
 uint32_t input_get_switches() {
-    // Enter calibration if both board switches are pressed
     return ROM_GPIOPinRead(GPIO_PORTF_BASE, SW1 | SW2);
 }
