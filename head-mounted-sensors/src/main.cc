@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     rs::format depth_format;
     depth_intrin = dev->get_stream_intrinsics(rs::stream::depth);
     depth_format = dev->get_stream_format(rs::stream::depth);
-     cv::Mat frameGray;
+    cv::Mat frameGray;
     cv::Mat frameGrayNrm;
     auto depth_callback = [depth_intrin, depth_format, &frameGray, &frameGrayNrm](rs::frame f)
     {
@@ -77,29 +77,30 @@ int main(int argc, char **argv) {
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
 
-        cv::Mat rgb;
-        cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
-        cv::morphologyEx(rgb, rgb, cv::MORPH_CLOSE, cv::Mat());
-        if (frames == 6) {
-        int i, soma = 0;
-        double value;
-        for (i=0;i<frames;i++){
-          soma += axisHistory[i];
-        }
-        value = soma/frames;
-        frames = 0;
+        if (!frameGray.empty()) {
+            cv::Mat rgb;
+            cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
+            cv::morphologyEx(rgb, rgb, cv::MORPH_CLOSE, cv::Mat());
+            if (frames == 5) {
+                int i, soma = 0;
+                double value;
+                for (i=0;i<frames;i++){
+                    soma += axisHistory[i];
+                }
+                value = soma/frames;
 
-        report.x2 = value;
-         } else {
-        buffer = getAxis(rgb, 30);
-        if (buffer == 0) {
-          for (int jota = 0; jota < 5; jota++) {
-            axisHistory[jota] = 0;
-          }
-        } else {
-          axisHistory[frames] = buffer;
-        }
-        frames += 1;
+                report.x2 = value;
+            } else {
+                buffer = getAxis(rgb, 30);
+                if (buffer == 0) {
+                    for (int jota = 0; jota < 5; jota++) {
+                        axisHistory[jota] = 0;
+                    }
+                } else {
+                    axisHistory[frames] = buffer;
+                }
+                frames++;
+            }
         }
 
         bool has_data = false;
