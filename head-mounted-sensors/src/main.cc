@@ -59,7 +59,9 @@ int main(int argc, char **argv) {
     dev->enable_stream(rs::stream::depth, 0, 0, rs::format::z16, 60);
     rs::intrinsics depth_intrinsics;
     depth_intrinsics = dev->get_stream_intrinsics(rs::stream::depth);
-    auto depth_callback = [depth_intrinsics](rs::frame f)
+    int frames = 0;
+    int axisHistory[5] = {0,0,0,0,0};
+    auto depth_callback = [depth_intrinsics, &frames, &axisHistory](rs::frame f)
     {
         cv::Mat frame(cv::Size(depth_intrinsics.width, depth_intrinsics.height),
             CV_16UC1,
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
             }
             report.x1 = soma / frames;
         } else {
-            buffer = getAxis(rgb, 30);
+            int buffer = getAxis(rgb, 30);
             if (buffer == 0) {
                 for (int jota = 0; jota < 5; jota++) {
                     axisHistory[jota] = 0;
@@ -89,9 +91,6 @@ int main(int argc, char **argv) {
     };
     dev->set_frame_callback(rs::stream::depth, depth_callback);
     dev->start();
-    int frames = 0;
-    int axisHistory[5] = {0,0,0,0,0};
-    int buffer;
 
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
