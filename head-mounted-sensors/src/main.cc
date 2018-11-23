@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
          } else {
         buffer = getAxis(rgb, 30);
         if (buffer == 0) {
-          for (int jota =0;jota<6;jota++) {
+          for (int jota = 0; jota < 5; jota++) {
             axisHistory[jota] = 0;
           }
         } else {
