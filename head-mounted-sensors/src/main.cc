@@ -57,16 +57,35 @@ int main(int argc, char **argv) {
     if(ctx.get_device_count() == 0) return EXIT_FAILURE;
     rs::device * dev = ctx.get_device(0);
     dev->enable_stream(rs::stream::depth, 0, 0, rs::format::z16, 60);
-    rs::intrinsics depth_intrin;
-    rs::format depth_format;
-    depth_intrin = dev->get_stream_intrinsics(rs::stream::depth);
-    depth_format = dev->get_stream_format(rs::stream::depth);
-    cv::Mat frameGray;
-    cv::Mat frameGrayNrm;
-    auto depth_callback = [depth_intrin, depth_format, &frameGray, &frameGrayNrm](rs::frame f)
+    rs::intrinsics depth_intrinsics;
+    depth_intrinsics = dev->get_stream_intrinsics(rs::stream::depth);
+    auto depth_callback = [depth_intrinsics](rs::frame f)
     {
-        cv::Mat frame(cv::Size(depth_intrin.width,depth_intrin.height), CV_16UC1, filterData((uint16_t*)f.get_data(),depth_intrin.width,depth_intrin.height,150));
+        cv::Mat frame(cv::Size(depth_intrinsics.width, depth_intrinsics.height),
+            CV_16UC1,
+            filterData((uint16_t*) f.get_data(), depth_intrinsics.width, depth_intrinsics.height, 150));
+        cv::Mat frameGray;
         frame.convertTo(frameGray, CV_8U, 1. / 64);
+        cv::Mat rgb;
+        cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
+        cv::morphologyEx(rgb, rgb, cv::MORPH_CLOSE, cv::Mat());
+        if (frames == 5) {
+            int soma = 0;
+            for (int i = 0; i < frames; i++){
+                soma += axisHistory[i];
+            }
+            report.x1 = soma / frames;
+        } else {
+            buffer = getAxis(rgb, 30);
+            if (buffer == 0) {
+                for (int jota = 0; jota < 5; jota++) {
+                    axisHistory[jota] = 0;
+                }
+            } else {
+                axisHistory[frames] = buffer;
+            }
+            frames++;
+        }
     };
     dev->set_frame_callback(rs::stream::depth, depth_callback);
     dev->start();
@@ -80,33 +99,6 @@ int main(int argc, char **argv) {
         bool has_data = false;
         has_data |= s.serialize(&report.x1);
         // has_data |= realsense_has_data;
-
-        if (!frameGray.empty()) {
-            cv::Mat rgb;
-            cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
-            frameGray.release();
-            cv::morphologyEx(rgb, rgb, cv::MORPH_CLOSE, cv::Mat());
-            if (frames == 5) {
-                int i, soma = 0;
-                double value;
-                for (i=0;i<frames;i++){
-                    soma += axisHistory[i];
-                }
-                value = soma/frames;
-
-                report.x1 = value;
-            } else {
-                buffer = getAxis(rgb, 30);
-                if (buffer == 0) {
-                    for (int jota = 0; jota < 5; jota++) {
-                        axisHistory[jota] = 0;
-                    }
-                } else {
-                    axisHistory[frames] = buffer;
-                }
-                frames++;
-            }
-        }
 
         if (!has_data)
             continue;

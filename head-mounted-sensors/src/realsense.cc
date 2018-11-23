@@ -12,7 +12,7 @@ uint16_t* filterData(uint16_t* data, int width, int height, uint16_t range) {
         if (!((data[i]/meiota)%2)) {
             if (data[i] > 0 && data[i] < minEsquerda) {
                 minEsquerda = data[i];
-        //linha no quadrante direito
+                //linha no quadrante direito
             }
         } else {
             if (data[i] > 0 && data[i] < minDireita) {
@@ -20,9 +20,9 @@ uint16_t* filterData(uint16_t* data, int width, int height, uint16_t range) {
             }
         }
     }
-     uint16_t maxDireita = minDireita + range;
+    uint16_t maxDireita = minDireita + range;
     uint16_t maxEsquerda = minEsquerda + range;
-     for (i=0;i<(width*height);i++) {
+    for (i=0;i<(width*height);i++) {
         if (!((data[i]/meiota)%2)) {
         // Na esquerda
             if (data[i] >= maxEsquerda) {
@@ -43,20 +43,18 @@ uint16_t* filterData(uint16_t* data, int width, int height, uint16_t range) {
             }
         }
     }
-     return filtered;
+    return filtered;
  }
 
  int normalize(int min, int max, double left, double right) {
-     int angle = (int) ((left - right) * (max - (min)) / (30 - (-30)));
+    int angle = (int) ((left - right) * (max - (min)) / (30 - (-30)));
 
     // Clipping
-    if (angle < min) {
+    if (angle < min)
         return min;
-    } else if (angle > max) {
+    if (angle > max)
         return max;
-    } else {
-        return angle;
-    }
+    return angle;
 }
 
 int getAxis(cv::Mat data, int filter) {
@@ -83,7 +81,7 @@ int getAxis(cv::Mat data, int filter) {
             }
         }
     }
-     double mLeft = left/(nLeft+1);
+    double mLeft = left/(nLeft+1);
     double mRight = right/(nRight+1);
-     return normalize(-128,127,mLeft,mRight);
+    return normalize(-128,127,mLeft,mRight);
  }
