@@ -77,6 +77,10 @@ int main(int argc, char **argv) {
     for (;;) {
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
 
+        bool has_data = false;
+        has_data |= s.serialize(&report.x1);
+        // has_data |= realsense_has_data;
+
         if (!frameGray.empty()) {
             cv::Mat rgb;
             cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
@@ -89,7 +93,7 @@ int main(int argc, char **argv) {
                 }
                 value = soma/frames;
 
-                report.x2 = value;
+                report.x1 = value;
             } else {
                 buffer = getAxis(rgb, 30);
                 if (buffer == 0) {
@@ -103,9 +107,6 @@ int main(int argc, char **argv) {
             }
         }
 
-        bool has_data = false;
-        has_data |= s.serialize(&report.x1);
-        // has_data |= realsense_has_data;
         if (!has_data)
             continue;
         if (verbose)
