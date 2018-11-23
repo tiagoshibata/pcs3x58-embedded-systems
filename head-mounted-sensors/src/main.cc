@@ -3,6 +3,9 @@
 #include <thread>
 #include <unistd.h>
 
+#include <librealsense/rs.hpp>
+#include <opencv2/opencv.hpp>
+
 #include "9dof.hh"
 #include "realsense.h"
 #include "serial.h"
