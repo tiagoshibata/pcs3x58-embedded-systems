@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
         if (!frameGray.empty()) {
             cv::Mat rgb;
             cv::morphologyEx(frameGray, rgb, cv::MORPH_OPEN, cv::Mat());
+            frameGray.release();
             cv::morphologyEx(rgb, rgb, cv::MORPH_CLOSE, cv::Mat());
             if (frames == 5) {
                 int i, soma = 0;
