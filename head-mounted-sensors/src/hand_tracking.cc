@@ -4,20 +4,25 @@
 #include <opencv2/opencv.hpp>
 #include <librealsense/rs.hpp>
 
-HandTracking::HandTracking() {
-    rs::context ctx;
+HandTracking::HandTracking(bool debug) {
     if (!ctx.get_device_count())
         std::exit(1);
     dev = ctx.get_device(0);
     dev->enable_stream(rs::stream::depth, 0, 0, rs::format::z16, 60);
     rs::intrinsics depth_intrinsics;
     depth_intrinsics = dev->get_stream_intrinsics(rs::stream::depth);
-    int width = depth_intrinsics.width;
-    int height = depth_intrinsics.height;
-    auto depth_callback = [&width, &height](rs::frame f) {
-        cv::Mat frame16(height, width, CV_16UC1, (uint16_t*) f.get_data());
+    cv::Size size(depth_intrinsics.width, depth_intrinsics.height);
+
+    cv::VideoWriter converted;
+    if (debug) {
+        converted.open("converted.avi", cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), 30, size, false);
+    }
+    auto depth_callback = [size, debug, &converted](rs::frame f) {
+        cv::Mat frame16(size, CV_16UC1, (uint16_t*) f.get_data());
         cv::Mat frame;
         frame16.convertTo(frame, CV_8U, 1. / 64);
+        if (debug)
+            converted << frame;
         cv::Mat binary_mask;
         cv::threshold(frame, binary_mask, 50, 255, cv::THRESH_BINARY_INV);
         // cv::inRange(frame, 0, 200, binary_mask);

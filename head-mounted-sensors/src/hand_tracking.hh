@@ -4,11 +4,12 @@
 
 class HandTracking {
 public:
-    HandTracking();
+    HandTracking(bool debug);
     ~HandTracking();
     bool serialize(std::int8_t *buffer);
 
 private:
+    rs::context ctx;
     std::int8_t last_reading;
     rs::device *dev;
 };
