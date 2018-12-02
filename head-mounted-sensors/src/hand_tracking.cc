@@ -2,6 +2,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <vector>
+#include <utility>
+
 #include <opencv2/opencv.hpp>
 #include <librealsense/rs.hpp>
 
@@ -48,7 +51,27 @@ HandTracking::HandTracking(bool debug) {
         if (debug)
             video_close << frame;
 
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(frame, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+        std::cout << contours.size() << " contours found\n";
+        if (contours.size() < 2)
+            return;
+        double largest_area = 0, second_largest_area = 0;
+        std::vector<cv::Point> largest_area_points, second_largest_area_points;
+        for (auto contour : contours) {
+            double area = cv::contourArea(contour);
+            if (area < second_largest_area)
+                continue;
+            if (area > largest_area) {
+                largest_area = area;
+                largest_area_points = std::move(contour);
+            } else {
+                second_largest_area = area;
+                second_largest_area_points = std::move(contour);
+            }
         }
+        std::cout << "Largest contours: " << largest_area << ", " << second_largest_area << '\n';
     };
     dev->set_frame_callback(rs::stream::depth, depth_callback);
     dev->start();
