@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 
         bool has_data = false;
         has_data |= s.serialize(&report.y1);
-        // has_data |= realsense_has_data;
+        has_data |= hand_tracking.serialize(&report.x1);
 
         if (!has_data)
             continue;
