@@ -1,6 +1,7 @@
 #include "hand_tracking.hh"
 
 #include <cstdlib>
+#include <climits>
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -54,7 +55,8 @@ HandTracking::HandTracking(bool debug) {
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(frame, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-        std::cout << contours.size() << " contours found\n";
+        if (debug)
+            std::cout << contours.size() << " contours found\n";
         if (contours.size() < 2)
             return;
         double largest_area = 0, second_largest_area = 0;
@@ -64,6 +66,8 @@ HandTracking::HandTracking(bool debug) {
             if (area < second_largest_area)
                 continue;
             if (area > largest_area) {
+                second_largest_area = largest_area;
+                second_largest_area_points = std::move(largest_area_points);
                 largest_area = area;
                 largest_area_points = std::move(contour);
             } else {
@@ -71,7 +75,25 @@ HandTracking::HandTracking(bool debug) {
                 second_largest_area_points = std::move(contour);
             }
         }
-        std::cout << "Largest contours: " << largest_area << ", " << second_largest_area << '\n';
+
+        int largest_x = 0, largest_y = INT_MAX, second_x = 0, second_y = INT_MAX;
+        for (auto point : largest_area_points) {
+            // Get highest point of each blob
+            if (point.y < largest_y) {
+                largest_x = point.x;
+                largest_y = point.y;
+            }
+        }
+        for (auto point : second_largest_area_points) {
+            if (point.y < second_y) {
+                second_x = point.x;
+                second_y = point.y;
+            }
+        }
+
+        if (debug)
+            std::cout << "Largest contours: " << largest_area << "(" << largest_x << ", " << largest_y << ")" << " and "
+                << second_largest_area << "(" << second_x << ", " << second_y << ")" << '\n';
     };
     dev->set_frame_callback(rs::stream::depth, depth_callback);
     dev->start();
